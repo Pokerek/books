@@ -2,21 +2,22 @@ import express from 'express';
 import { join } from 'path';
 import cors from 'cors';
 
-import Controller from './types/controller';
 import errorMiddleware from './middlewares/error';
+import routers from './routes';
+import connectDB from './database';
 
 const PORT = Number(process.env.PORT) || 3000;
 
 class App {
   public app: express.Application;
 
-  constructor(controllers: Controller[]) {
+  constructor() {
     this.app = express();
 
     this.connectToTheDatabase();
     this.initializeMiddleware();
-    this.initializeControllers(controllers);
     this.initializeErrorHandler();
+    this.initializeRoutes();
   }
 
   public listen() {
@@ -31,19 +32,19 @@ class App {
     this.app.use('/public', express.static(join(__dirname, '../public')));
   }
 
-  private initializeControllers(controllers: Controller[]) {
-    controllers.forEach((controller) => {
-      this.app.use('/', controller.router);
-    });
+  private initializeRoutes() {
+    for (const router of routers) {
+      const { path, router: routerInstance } = router;
+      this.app.use(`/api${path}`, routerInstance);
+    }
   }
 
   private initializeErrorHandler() {
     this.app.use(errorMiddleware);
   }
 
-  // TODO Change for relational database
   private connectToTheDatabase() {
-    console.log('Database');
+    connectDB();
   }
 }
 
