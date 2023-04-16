@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import BookModel from './models/bookModel';
 
 const sequelize = new Sequelize(
   process.env.DB_DATABASE as string,
@@ -10,6 +11,10 @@ const sequelize = new Sequelize(
   }
 );
 
+const models = {
+  Book: BookModel(sequelize)
+};
+
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
@@ -19,4 +24,5 @@ const connectDB = async () => {
   }
 };
 
-export default connectDB;
+export default sequelize;
+export { connectDB, models };

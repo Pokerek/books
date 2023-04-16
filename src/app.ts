@@ -4,7 +4,7 @@ import cors from 'cors';
 
 import errorMiddleware from './middlewares/error';
 import routers from './routes';
-import connectDB from './database';
+import { connectDB } from './database';
 
 const PORT = Number(process.env.PORT) || 3000;
 
