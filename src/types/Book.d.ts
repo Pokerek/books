@@ -1,4 +1,4 @@
-export interface BookAttributes {
+export declare interface BookAttributes {
   id?: number;
   title: string;
   author: string;
@@ -7,3 +7,8 @@ export interface BookAttributes {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export declare type BookUpdateAttributes = Pick<
+  BookAttributes,
+  'title' | 'author' | 'isbn'
+>;

@@ -2,7 +2,7 @@ import express from 'express';
 import { join } from 'path';
 import cors from 'cors';
 
-import errorMiddleware from './middlewares/error';
+import errorMiddleware from './middlewares/error.middleware';
 import routers from './routes';
 import { connectDB } from './database';
 
@@ -16,8 +16,8 @@ class App {
 
     this.connectToTheDatabase();
     this.initializeMiddleware();
-    this.initializeErrorHandler();
     this.initializeRoutes();
+    this.initializeErrorHandler();
   }
 
   public listen() {

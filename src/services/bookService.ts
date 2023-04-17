@@ -1,6 +1,6 @@
 import { models } from '../database';
 import HttpException from '../errors/HttpException';
-import { BookAttributes } from '../types/Book';
+import { BookAttributes } from '../types/book';
 
 const Book = models.Book;
 

@@ -1,18 +1,21 @@
-import { Sequelize } from 'sequelize';
+import { Dialect, Sequelize } from 'sequelize';
+import UserModel from './models/userModel';
 import BookModel from './models/bookModel';
+import config from './config/config.json';
 
 const sequelize = new Sequelize(
-  process.env.DB_DATABASE as string,
-  process.env.DB_USER as string,
-  process.env.DB_PASSWORD as string,
+  config.development.database,
+  config.development.username,
+  config.development.password,
   {
-    dialect: 'postgres',
-    host: process.env.DB_HOST
+    dialect: config.development.dialect as Dialect,
+    host: config.development.host
   }
 );
 
 const models = {
-  Book: BookModel(sequelize)
+  Book: BookModel(sequelize),
+  User: UserModel(sequelize)
 };
 
 const connectDB = async () => {

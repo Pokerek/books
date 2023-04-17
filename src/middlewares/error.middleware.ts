@@ -10,7 +10,7 @@ function errorMiddleware(
   const code = error.code || 500;
   const message = error.message || 'Something went wrong';
 
-  response.status(code).send({ code, message });
+  response.status(code).send({ message });
   next();
 }
 

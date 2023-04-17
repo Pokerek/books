@@ -1,5 +1,5 @@
 import { Model, DataTypes, Optional, Sequelize } from 'sequelize';
-import { BookAttributes } from '../../types/Book';
+import { BookAttributes } from '../../types/book';
 
 type BookCreationAttributes = Optional<
   BookAttributes,
@@ -10,13 +10,13 @@ class Book
   extends Model<BookAttributes, BookCreationAttributes>
   implements BookAttributes
 {
-  public id!: number;
-  public title!: string;
-  public author!: string;
-  public isbn!: string;
-  public available!: boolean;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  declare id: number;
+  declare title: string;
+  declare author: string;
+  declare isbn: string;
+  declare available: boolean;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 const BookModel = (sequelize: Sequelize) => {
