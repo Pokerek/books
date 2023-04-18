@@ -3,7 +3,7 @@ import { BookAttributes } from '../../types/book';
 
 type BookCreationAttributes = Optional<
   BookAttributes,
-  'id' | 'createdAt' | 'updatedAt' | 'available'
+  'id' | 'createdAt' | 'updatedAt' | 'available' | 'userId'
 >;
 
 class Book

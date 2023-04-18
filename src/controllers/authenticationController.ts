@@ -13,6 +13,7 @@ class AuthenticationController {
     try {
       const user = await getUserByName(username);
       if (!user) return next(new AuthException('Invalid credentials'));
+      if (user instanceof Error) return next(user);
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid)
@@ -22,7 +23,12 @@ class AuthenticationController {
         expiresIn: '1h'
       });
 
-      res.send({ token });
+      res.header('Authorization', `Bearer ${token}`);
+      res.send({
+        message: 'Login successful',
+        token,
+        user: { id: user.id, username: user.username, name: user.name }
+      });
     } catch (err) {
       console.log(err);
       return next(new ServerException());
@@ -42,12 +48,18 @@ class AuthenticationController {
         admin
       });
       if (!newUser) return next(new ServerException());
+      if (newUser instanceof Error) return next(newUser);
 
       const token = jwt.sign({ id: newUser.id }, SECRET, {
         expiresIn: '1h'
       });
 
-      res.send({ token });
+      res.header('Authorization', `Bearer ${token}`);
+      res.send({
+        message: 'Register successful',
+        token,
+        user: { id: newUser.id, username: newUser.username, name: newUser.name }
+      });
     } catch (err) {
       return next(new ServerException());
     }

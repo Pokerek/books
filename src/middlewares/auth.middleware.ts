@@ -17,15 +17,15 @@ const authMiddleware = async (
     return next(new AuthException('Token not provided'));
   }
 
-  //TODO Save token in cookie?
   const [, token] = authHeader.split(' ');
   try {
     const decoded = jwt.verify(token, secret) as DataStoredInToken;
     const id = decoded.id;
+
     const user = await getUserById(id);
-    if (!user) {
-      return next(new AuthException('Invalid token'));
-    }
+    if (!user) return next(new AuthException('Invalid token'));
+    if (user instanceof Error) return next(user);
+
     req.user = user;
     return next();
   } catch (err) {
@@ -33,4 +33,31 @@ const authMiddleware = async (
   }
 };
 
+const userMiddleware = async (
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+  if (!user || user.admin) {
+    return next(new AuthException('Only user has access for this action.'));
+  }
+
+  return next();
+};
+
+const adminMiddleware = async (
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+  if (!user || !user.admin) {
+    return next(new AuthException('Only Admin has access for this action.'));
+  }
+
+  return next();
+};
+
 export default authMiddleware;
+export { userMiddleware, adminMiddleware };

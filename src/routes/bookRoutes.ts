@@ -3,37 +3,50 @@ const router = Router();
 
 import bookController from '../controllers/bookController';
 import validationMiddleware from '../middlewares/validation.middleware';
-import {
-  bookAddSchema,
-  bookForRentSchema,
-  bookUpdateSchema
-} from '../validations/book';
+import { bookAddSchema, bookUpdateSchema } from '../validations/book';
+import authMiddleware, {
+  adminMiddleware,
+  userMiddleware
+} from '../middlewares/auth.middleware';
 
-router.get('/', bookController.getAllBooks);
+router.get('/', authMiddleware, bookController.getAllBooks);
 
-router.get('/available', bookController.getAllAvailableBooks);
+router.get('/available', authMiddleware, bookController.getAllAvailableBooks);
 
-router.get('/:id', bookController.getBook);
-
-router.post('/', validationMiddleware(bookAddSchema), bookController.addBook);
+router.post(
+  '/',
+  authMiddleware,
+  adminMiddleware,
+  validationMiddleware(bookAddSchema),
+  bookController.addBook
+);
 
 router.patch(
   '/:id',
+  authMiddleware,
+  adminMiddleware,
   validationMiddleware(bookUpdateSchema),
   bookController.updateBook
 );
 
+router.delete(
+  '/:id',
+  authMiddleware,
+  adminMiddleware,
+  bookController.deleteBook
+);
+
 router.patch(
   '/rent/:id',
-  validationMiddleware(bookForRentSchema),
+  authMiddleware,
+  userMiddleware,
   bookController.rentBook
 );
 router.patch(
   '/return/:id',
-  validationMiddleware(bookForRentSchema),
+  authMiddleware,
+  userMiddleware,
   bookController.returnBook
 );
-
-router.delete('/:id', bookController.deleteBook);
 
 export default { path: '/books', router };

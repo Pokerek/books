@@ -12,8 +12,4 @@ const bookUpdateSchema = Joi.object({
   isbn: Joi.string().max(13)
 });
 
-const bookForRentSchema = Joi.object({
-  userId: Joi.number().required()
-});
-
-export { bookAddSchema, bookUpdateSchema, bookForRentSchema };
+export { bookAddSchema, bookUpdateSchema };

@@ -11,6 +11,7 @@ import { BookUpdateAttributes } from '../types/book';
 const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
   const allBooks = await bookService.getAllBooks();
   if (!allBooks) next(new NotFoundException('Books'));
+  if (allBooks instanceof HttpException) return next(allBooks);
 
   res.send({ status: 'OK', data: allBooks });
 };
@@ -22,6 +23,9 @@ const getAllAvailableBooks = async (
 ) => {
   const getAllAvailableBooks = await bookService.getAllAvailableBooks();
   if (!getAllAvailableBooks) next(new NotFoundException('Books'));
+  if (getAllAvailableBooks instanceof HttpException) {
+    return next(getAllAvailableBooks);
+  }
 
   res.send(getAllAvailableBooks);
 };
@@ -31,6 +35,7 @@ const getBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const getBook = await bookService.getBook(Number(id));
   if (!getBook) return next(new NotFoundByIdException(id, 'Book'));
+  if (getBook instanceof HttpException) return next(getBook);
 
   res.send({ status: 'OK', data: getBook });
 };
@@ -41,6 +46,7 @@ const addBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const addBook = await bookService.addBook(book);
   if (!addBook) return next(new NotFoundException('Book'));
+  if (addBook instanceof HttpException) return next(addBook);
 
   res.send({ status: 'OK', data: addBook });
 };
@@ -54,6 +60,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const updateBook = await bookService.updateBook(Number(id), book);
   if (!updateBook) return next(new NotFoundByIdException(id, 'Book'));
+  if (updateBook instanceof HttpException) return next(updateBook);
 
   res.send({
     status: 'OK',
@@ -64,8 +71,10 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 const rentBook = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const { userId } = req.body;
+
   const book = await bookService.getBook(Number(id));
   if (!book) return next(new NotFoundByIdException(id, 'Book'));
+  if (book instanceof HttpException) return next(book);
 
   if (!book.available) {
     return next(
@@ -85,6 +94,7 @@ const returnBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const book = await bookService.getBook(Number(id));
   if (!book) return next(new NotFoundByIdException(id, 'Book'));
+  if (book instanceof HttpException) return next(book);
 
   if (book.available && book.userId !== userId) {
     return next(
@@ -94,14 +104,17 @@ const returnBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const returnBook = await bookService.returnBook(Number(id));
   if (!returnBook) return next(new NotFoundByIdException(id, 'Book'));
+  if (returnBook instanceof HttpException) return next(returnBook);
 
   res.send({ status: 'OK', message: `Book with id ${id} was returned.` });
 };
 
 const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
+
   const deleteBook = await bookService.deleteBook(Number(id));
   if (!deleteBook) return next(new NotFoundByIdException(id, 'Book'));
+  if (deleteBook instanceof HttpException) return next(deleteBook);
 
   res.send({ status: 'OK', message: `Book with id ${id} was deleted.` });
 };

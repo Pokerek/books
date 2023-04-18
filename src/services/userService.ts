@@ -14,7 +14,7 @@ const getUserByName = async (username: string) => {
     return user;
   } catch (error) {
     if (error instanceof Error) {
-      throw new ServerException();
+      return new ServerException();
     }
   }
 };
@@ -29,7 +29,7 @@ const getUserById = async (id: number) => {
     return user;
   } catch (error) {
     if (error instanceof Error) {
-      throw new ServerException();
+      return new ServerException();
     }
   }
 };
@@ -41,7 +41,7 @@ const createUser = async (user: UserAttributes) => {
   } catch (error) {
     if (error instanceof Error) {
       console.log(error);
-      throw new ServerException();
+      return new ServerException();
     }
   }
 };

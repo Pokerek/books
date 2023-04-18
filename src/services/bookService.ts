@@ -11,7 +11,7 @@ const getAllBooks = async () => {
     return books;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
@@ -26,7 +26,7 @@ const getAllAvailableBooks = async () => {
     return books;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
@@ -37,7 +37,7 @@ const getBook = async (id: number) => {
     return book;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
@@ -48,7 +48,7 @@ const addBook = async (book: BookAttributes) => {
     return newBook;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
@@ -63,7 +63,7 @@ const updateBook = async (id: number, book: BookAttributes) => {
     return updateBook;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
@@ -84,7 +84,7 @@ const rentBook = async (id: number, userId: number) => {
     return rentBook;
   } catch (error) {
     if (error instanceof Error) {
-      throw new ServerException();
+      return new ServerException();
     }
   }
 };
@@ -105,7 +105,7 @@ const returnBook = async (id: number) => {
     return returnBook;
   } catch (error) {
     if (error instanceof Error) {
-      throw new ServerException();
+      return new ServerException();
     }
   }
 };
@@ -120,7 +120,7 @@ const deleteBook = async (id: number) => {
     return deleteBook;
   } catch (error) {
     if (error instanceof Error) {
-      throw new HttpException(500, error.message);
+      return new HttpException(500, error.message);
     }
   }
 };
