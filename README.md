@@ -5,16 +5,16 @@ The Bookstore API is a RESTful API built using Node.js, Express, and Sequelize. 
 The following API endpoints are available:
 
 ### Books
-GET /books: Returns all books in the database.
-GET /books/available: Returns all available books in the database.
+- GET /books: Returns all books in the database.
+- GET /books/available: Returns all available books in the database.
 
-POST /books: Adds a new book to the database.
-PATCH /books/:id: Updates a specific book by its ID.
-DELETE /books/:id: Deletes a specific book by its ID.
+- POST /books: Adds a new book to the database.
+- PATCH /books/:id: Updates a specific book by its ID.
+- DELETE /books/:id: Deletes a specific book by its ID.
 
 ### Authentication
-POST /auth/login: Authenticates a user and generates a JWT token.
-POST /auth/register: Registers a new user in the database and generates a JWT token.
+- POST /auth/login: Authenticates a user and generates a JWT token.
+- POST /auth/register: Registers a new user in the database and generates a JWT token.
 
 ### Authorization
 All endpoints require a JWT token in the Authorization header to access them. The token is generated during the login process and is valid for a certain amount of time.
