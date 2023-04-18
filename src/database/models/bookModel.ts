@@ -15,6 +15,7 @@ class Book
   declare author: string;
   declare isbn: string;
   declare available: boolean;
+  declare userId: number | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -43,6 +44,14 @@ const BookModel = (sequelize: Sequelize) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       }
     },
     {

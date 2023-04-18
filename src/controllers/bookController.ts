@@ -61,6 +61,43 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+const rentBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  const book = await bookService.getBook(Number(id));
+  if (!book) return next(new NotFoundByIdException(id, 'Book'));
+
+  if (!book.available) {
+    return next(
+      new HttpException(400, `Book with id ${id} is not available for rent.`)
+    );
+  }
+
+  const rentBook = await bookService.rentBook(Number(id), Number(userId));
+  if (!rentBook) return next(new NotFoundByIdException(id, 'Book'));
+
+  res.send({ status: 'OK', message: `Book with id ${id} was rented.` });
+};
+
+const returnBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  const book = await bookService.getBook(Number(id));
+  if (!book) return next(new NotFoundByIdException(id, 'Book'));
+
+  if (book.available && book.userId !== userId) {
+    return next(
+      new HttpException(400, `Book with id ${id} is not rented by you.`)
+    );
+  }
+
+  const returnBook = await bookService.returnBook(Number(id));
+  if (!returnBook) return next(new NotFoundByIdException(id, 'Book'));
+
+  res.send({ status: 'OK', message: `Book with id ${id} was returned.` });
+};
+
 const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const deleteBook = await bookService.deleteBook(Number(id));
@@ -75,5 +112,7 @@ export default {
   getBook,
   addBook,
   updateBook,
+  rentBook,
+  returnBook,
   deleteBook
 };

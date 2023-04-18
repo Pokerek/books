@@ -17,6 +17,7 @@ const authMiddleware = async (
     return next(new AuthException('Token not provided'));
   }
 
+  //TODO Save token in cookie?
   const [, token] = authHeader.split(' ');
   try {
     const decoded = jwt.verify(token, secret) as DataStoredInToken;

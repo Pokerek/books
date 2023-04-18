@@ -4,6 +4,7 @@ export declare interface BookAttributes {
   author: string;
   isbn: string;
   available?: boolean;
+  userId?: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

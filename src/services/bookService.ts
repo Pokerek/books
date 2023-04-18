@@ -1,4 +1,5 @@
 import { models } from '../database';
+import { ServerException } from '../errors';
 import HttpException from '../errors/HttpException';
 import { BookAttributes } from '../types/book';
 
@@ -67,6 +68,48 @@ const updateBook = async (id: number, book: BookAttributes) => {
   }
 };
 
+const rentBook = async (id: number, userId: number) => {
+  try {
+    const rentBook = await Book.update(
+      {
+        available: false,
+        userId
+      },
+      {
+        where: {
+          id
+        }
+      }
+    );
+    return rentBook;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new ServerException();
+    }
+  }
+};
+
+const returnBook = async (id: number) => {
+  try {
+    const returnBook = await Book.update(
+      {
+        available: true,
+        userId: null
+      },
+      {
+        where: {
+          id
+        }
+      }
+    );
+    return returnBook;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new ServerException();
+    }
+  }
+};
+
 const deleteBook = async (id: number) => {
   try {
     const deleteBook = await Book.destroy({
@@ -88,5 +131,7 @@ export default {
   getBook,
   addBook,
   updateBook,
+  rentBook,
+  returnBook,
   deleteBook
 };
