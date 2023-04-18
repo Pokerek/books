@@ -5,28 +5,33 @@ import { BookAttributes } from '../types/book';
 
 const Book = models.Book;
 
-const getAllBooks = async () => {
+const getAllBooks = async (offset: number, limit: number) => {
   try {
-    const books = await Book.findAll();
-    return books;
+    const books = await Book.findAndCountAll({
+      offset,
+      limit
+    });
+    return { books: books.rows, count: books.count };
   } catch (error) {
     if (error instanceof Error) {
-      return new HttpException(500, error.message);
+      return { error: new HttpException(500, error.message) };
     }
   }
 };
 
-const getAllAvailableBooks = async () => {
+const getAllAvailableBooks = async (offset: number, limit: number) => {
   try {
-    const books = await Book.findAll({
+    const books = await Book.findAndCountAll({
+      offset,
+      limit,
       where: {
         available: true
       }
     });
-    return books;
+    return { books: books.rows, count: books.count };
   } catch (error) {
     if (error instanceof Error) {
-      return new HttpException(500, error.message);
+      return { error: new HttpException(500, error.message) };
     }
   }
 };

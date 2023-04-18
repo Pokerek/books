@@ -1,6 +1,9 @@
 import { Router } from 'express';
 const router = Router();
 
+import apicache from 'apicache';
+const cache = apicache.middleware;
+
 import bookController from '../controllers/bookController';
 import validationMiddleware from '../middlewares/validation.middleware';
 import { bookAddSchema, bookUpdateSchema } from '../validations/book';
@@ -9,13 +12,18 @@ import authMiddleware, {
   userMiddleware
 } from '../middlewares/auth.middleware';
 
-router.get('/', authMiddleware, bookController.getAllBooks);
+router.use(authMiddleware);
 
-router.get('/available', authMiddleware, bookController.getAllAvailableBooks);
+router.get('/', cache('2 minutes'), bookController.getAllBooks);
+
+router.get(
+  '/available',
+  cache('2 minutes'),
+  bookController.getAllAvailableBooks
+);
 
 router.post(
   '/',
-  authMiddleware,
   adminMiddleware,
   validationMiddleware(bookAddSchema),
   bookController.addBook
@@ -23,30 +31,14 @@ router.post(
 
 router.patch(
   '/:id',
-  authMiddleware,
   adminMiddleware,
   validationMiddleware(bookUpdateSchema),
   bookController.updateBook
 );
 
-router.delete(
-  '/:id',
-  authMiddleware,
-  adminMiddleware,
-  bookController.deleteBook
-);
+router.delete('/:id', adminMiddleware, bookController.deleteBook);
 
-router.patch(
-  '/rent/:id',
-  authMiddleware,
-  userMiddleware,
-  bookController.rentBook
-);
-router.patch(
-  '/return/:id',
-  authMiddleware,
-  userMiddleware,
-  bookController.returnBook
-);
+router.patch('/rent/:id', userMiddleware, bookController.rentBook);
+router.patch('/return/:id', userMiddleware, bookController.returnBook);
 
 export default { path: '/books', router };

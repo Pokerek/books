@@ -9,7 +9,8 @@ const sequelize = new Sequelize(
   config.development.password,
   {
     dialect: config.development.dialect as Dialect,
-    host: config.development.host
+    host: config.development.host,
+    logging: false
   }
 );
 

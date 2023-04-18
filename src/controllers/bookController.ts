@@ -6,14 +6,38 @@ import {
 } from '../errors';
 
 import bookService from '../services/bookService';
-import { BookUpdateAttributes } from '../types/book';
+import { BookAttributes, BookUpdateAttributes } from '../types/book';
 
 const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
-  const allBooks = await bookService.getAllBooks();
-  if (!allBooks) next(new NotFoundException('Books'));
-  if (allBooks instanceof HttpException) return next(allBooks);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 100;
 
-  res.send({ status: 'OK', data: allBooks });
+  const offset = (page - 1) * limit;
+
+  const data = await bookService.getAllBooks(offset, limit);
+  if (data?.error) return next(data.error);
+
+  if (!data) return next(new NotFoundException('Books'));
+
+  const totalPage = Math.ceil(data.count / limit);
+  const convertedBooks = data.books.map((book: BookAttributes) => {
+    return {
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn,
+      available: book.available
+    };
+  });
+
+  res.send({
+    status: 'OK',
+    total: data.count,
+    page,
+    totalPage,
+    limit,
+    data: convertedBooks
+  });
 };
 
 const getAllAvailableBooks = async (
@@ -21,23 +45,32 @@ const getAllAvailableBooks = async (
   res: Response,
   next: NextFunction
 ) => {
-  const getAllAvailableBooks = await bookService.getAllAvailableBooks();
-  if (!getAllAvailableBooks) next(new NotFoundException('Books'));
-  if (getAllAvailableBooks instanceof HttpException) {
-    return next(getAllAvailableBooks);
-  }
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 100;
 
-  res.send(getAllAvailableBooks);
-};
+  const offset = (page - 1) * limit;
 
-const getBook = async (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params;
+  const data = await bookService.getAllAvailableBooks(offset, limit);
+  if (data?.error) return next(data.error);
+  if (!data) return next(new NotFoundException('Books'));
 
-  const getBook = await bookService.getBook(Number(id));
-  if (!getBook) return next(new NotFoundByIdException(id, 'Book'));
-  if (getBook instanceof HttpException) return next(getBook);
+  const totalPage = Math.ceil(data.count / limit);
+  const convertedBooks = data.books.map((book: BookAttributes) => {
+    return {
+      id: book.id,
+      title: book.title,
+      author: book.author
+    };
+  });
 
-  res.send({ status: 'OK', data: getBook });
+  res.send({
+    status: 'OK',
+    total: data.count,
+    page,
+    totalPage,
+    limit,
+    data: convertedBooks
+  });
 };
 
 const addBook = async (req: Request, res: Response, next: NextFunction) => {
@@ -75,6 +108,12 @@ const rentBook = async (req: Request, res: Response, next: NextFunction) => {
   const book = await bookService.getBook(Number(id));
   if (!book) return next(new NotFoundByIdException(id, 'Book'));
   if (book instanceof HttpException) return next(book);
+
+  if (book.userId === userId) {
+    return next(
+      new HttpException(400, `You already rented book with id ${id}.`)
+    );
+  }
 
   if (!book.available) {
     return next(
@@ -122,7 +161,6 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
 export default {
   getAllBooks,
   getAllAvailableBooks,
-  getBook,
   addBook,
   updateBook,
   rentBook,
